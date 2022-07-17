@@ -51,14 +51,15 @@ jobs:
           repo init -u https://github.com/friendlyarm/friendlywrt_manifests -b master -m h3.xml --repo-url=https://github.com/friendlyarm/repo  --no-clone-bundle
           repo sync -c  --no-clone-bundle
       
-      - name: Merge UpStearm OpenWrt
+      - name: Merge Upstearm OpenWrt
         run: |
           rm -rf friendlywrt
           mkdir friendlywrt
           cd friendlywrt
           git init
-          git config user.email firefly88518@live.com
-          git config user.name kimking666
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git config user.name ${GITHUB_ACTOR}
+          git config pull.rebase true
           git remote add origin https://github.com/friendlyarm/friendlywrt.git
           git remote add upstream https://github.com/openwrt/openwrt.git
           git pull origin master-v18.06.1
