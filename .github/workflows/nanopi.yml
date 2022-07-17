@@ -77,40 +77,40 @@ jobs:
         run: |
           cd ../ 
           git clone https://github.com/coolsnowwolf/lede
-          cp -a ./lede/package/lean /home/runner/work/Nanopi-R1S-H3-by-Actions/Nanopi-R1S-H3-by-Actions/friendlywrt/package/
+          cp -a ./lede/package/lean $GITHUB_WORKSPACE/friendlywrt/package/
           
-          cd /home/runner/work/Nanopi-R1S-H3-by-Actions/Nanopi-R1S-H3-by-Actions/friendlywrt/
+          cd $GITHUB_WORKSPACE/friendlywrt/
           
           sed -i 's/https:\/\/git.openwrt.org\/project\/luci.git;openwrt-18.06/https:\/\/github.com\/coolsnowwolf\/luci/' feeds.conf.default  
       - name: Update Target.mk
         run: |
-          cd /home/runner/work/Nanopi-R1S-H3-by-Actions/Nanopi-R1S-H3-by-Actions/friendlywrt/include 
+          cd $GITHUB_WORKSPACE/friendlywrt/include 
           sed -i 's/dnsmasq /dnsmasq-full default-settings luci/' target.mk    
           
       - name: Update Feeds
         run: |
-          cd /home/runner/work/Nanopi-R1S-H3-by-Actions/Nanopi-R1S-H3-by-Actions/friendlywrt
+          cd $GITHUB_WORKSPACE/friendlywrt
           ./scripts/feeds update -a
           ./scripts/feeds install -a
-      - name: Costom Configure File
+      - name: Custom Configure File
         run: |
           rm -f ./.config*
-          wget https://raw.githubusercontent.com/kimking666/Nanopi-R1S-H3-by-Actions/master/r1s-h3-config
+          wget https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${GITHUB_REF_NAME}/r1s-h3-config
           cp r1s-h3-config .config
       - name: Build OpenWrt
         run: |
-          cd /home/runner/work/Nanopi-R1S-H3-by-Actions/Nanopi-R1S-H3-by-Actions/friendlywrt-H3
+          cd $GITHUB_WORKSPACE/friendlywrt-H3
           ./build.sh nanopi_r1s_h3.mk
       
       - name: Zip Files
         run: |
-          find /home/runner/work/Nanopi-R1S-H3-by-Actions/Nanopi-R1S-H3-by-Actions/friendlywrt-H3/out/ -name "FriendlyWrt_*img*" | xargs -i zip -r {}.zip {}
+          find $GITHUB_WORKSPACE/friendlywrt-H3/out/ -name "FriendlyWrt_*img*" | xargs -i zip -r {}.zip {}
           
       - name: Assemble Artifact
         run: |
           rm -rf ./artifact/
           mkdir -p ./artifact/
-          find /home/runner/work/Nanopi-R1S-H3-by-Actions/Nanopi-R1S-H3-by-Actions/friendlywrt-H3/out/ -name "FriendlyWrt_*img.zip*" | xargs -i mv -f {} ./artifact/
+          find $GITHUB_WORKSPACE/friendlywrt-H3/out/ -name "FriendlyWrt_*img.zip*" | xargs -i mv -f {} ./artifact/
       - name: Upload Artifact
         uses: actions/upload-artifact@master
         with:
